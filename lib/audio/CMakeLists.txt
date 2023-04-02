@@ -7,6 +7,6 @@ else()
     add_definitions(-DFFAUDIO_INTERFACE_DEFAULT_PTR=&ffalsa)
 endif()
 
-add_library(audio ffaudio/wasapi.c ffaudio/audio.h )
-target_compile_features(audio PUBLIC cxx_std_11)
+add_library(ffaudio ffaudio/wasapi.c ffaudio/audio.h )
+target_compile_features(ffaudio PUBLIC cxx_std_11)
 
