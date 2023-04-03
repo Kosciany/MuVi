@@ -5,17 +5,18 @@
 
 namespace Muvi {
 
+
     void FftWorker::Run() {
         using namespace std::chrono_literals;
 
         while(IsRunning()) {
-
-            /* Dummy task */
-            for(int i=0; i<3; ++i) {
-                std::cout << "FFT task worker\n";
-                std::this_thread::sleep_for(1s);
+            unsigned int value;
+            while(ProducerPop(value)) {
+                std::cout << "[FFT Worker] read " << value << std::endl;
             }
-            SetRunningState(false);
+
+            std::cout << "[FFT Worker] Going to sleep for 1s\n";
+            std::this_thread::sleep_for(1s);
         }
     }
 } // Muvi

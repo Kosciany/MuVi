@@ -1,0 +1,3 @@
+#pragma once
+
+#define MUVI_CFG_WORKER_BUF_SIZE_ELEMS 1024
