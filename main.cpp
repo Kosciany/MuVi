@@ -6,7 +6,7 @@
 #include <AudioLoopback.h>
 
 int main() {
-    AudioLoopback audio;
+    Muvi::AudioLoopback audio;
     int size = 0;
     uint32_t *buffer;
     int result = 0;
