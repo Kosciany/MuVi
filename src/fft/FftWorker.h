@@ -3,13 +3,15 @@
 #include <iostream>
 #include <chrono>
 
+#include "MuviConfig.h"
 #include "Worker.h"
+#include "AudioLoopbackWorker.h"
 
 namespace Muvi {
-    class FftWorker : public Worker {
+    class FftWorker : public Worker<unsigned int, MUVI_CFG_WORKER_BUF_SIZE_ELEMS> {
     public:
-        FftWorker() {}
-        ~FftWorker() {}
+        FftWorker(AudioLoopbackWorker& producer) : Worker(producer) { }
+        FftWorker() : Worker() {}
 
         void Run() override;
     };

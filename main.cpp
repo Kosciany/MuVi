@@ -5,11 +5,11 @@
 #include "AudioLoopbackWorker.h"
 
 int main() {
-    Muvi::FftWorker fftWorker;
-    fftWorker.Spawn();
-
     Muvi::AudioLoopbackWorker audioLoopbackWorker;
     audioLoopbackWorker.Spawn();
+
+    Muvi::FftWorker fftWorker(audioLoopbackWorker);
+    fftWorker.Spawn();
 
     audioLoopbackWorker.Join();
     fftWorker.Join();
