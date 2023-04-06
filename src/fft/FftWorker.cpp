@@ -1,6 +1,7 @@
 #include "FftWorker.h"
 
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 
 namespace Muvi {
@@ -10,13 +11,11 @@ namespace Muvi {
         using namespace std::chrono_literals;
 
         while(IsRunning()) {
-            unsigned int value;
+            audiobuff_t value;
             while(ProducerPop(value)) {
-                std::cout << "[FFT Worker] read " << value << std::endl;
+                std::cout << "[FFT Worker] read " << value.channels << std::fixed << std::setw(10) << std::setprecision(5) << value.first_channel[0] << std::endl;
             }
-
-            std::cout << "[FFT Worker] Going to sleep for 1s\n";
-            std::this_thread::sleep_for(1s);
+            std::this_thread::sleep_for(50ms);
         }
     }
 } // Muvi

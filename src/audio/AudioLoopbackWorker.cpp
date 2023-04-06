@@ -1,8 +1,6 @@
-#include "AudioLoopbackWorker.h"
-
 #include <iostream>
 #include <chrono>
-
+#include "AudioLoopbackWorker.h"
 #include "AudioLoopback.h"
 
 namespace Muvi {
@@ -11,24 +9,19 @@ namespace Muvi {
         using namespace std::chrono_literals;
 
         AudioLoopback audio;
+        audiobuff_t audio_buffer;
         int size = 0;
-        uint32_t *buffer;
         int result = 0;
         do
         {
-            result = audio.ReadChunk(&size, (void **) &buffer);
-            if (buffer) {
-                for(int i=0; i < size/sizeof(uint32_t); i++)
-                {
-                    std::cout <<"[AudioLoopback Worker] Pushing " << buffer[i] << std::endl;
-                    if(!Push((unsigned int)buffer[i])) {
-                        std::cout << "[AudioLoopback Worker] Queue is full!\n";
-                        break;
-                    }
+            result = audio.ReadChunk(&audio_buffer);
+            if (!result) {
+                //std::cout <<"[AudioLoopback Worker] Pushing " << audio_buffer.buff[0] << std::endl;
+                if(!Push(audio_buffer)) {
+                    std::cout << "[AudioLoopback Worker] Queue is full!\n";
                 }
-
-                std::cout << "[AudioLoopback Worker] Going to sleep for 1s\n";
-                std::this_thread::sleep_for(1s);
+                // std::cout << "[AudioLoopback Worker] Going to sleep for 1s\n";
+                std::this_thread::sleep_for(100ms);
             }
         } while(1);
     }
