@@ -20,7 +20,8 @@ target_link_libraries(audiotest PRIVATE ffaudio audio fft ${Boost_LIBRARIES})
 target_include_directories(audiotest PUBLIC
                           "."
                           "${PROJECT_BINARY_DIR}"
-                          "${PROJECT_SOURCE_DIR}/lib/audio"
+                          "${PROJECT_SOURCE_DIR}/lib/audio/ffaudio"
+                          "${PROJECT_SOURCE_DIR}/lib/audio/ffbase"
                           "${PROJECT_SOURCE_DIR}/src/audio"
                           "${PROJECT_SOURCE_DIR}/src/fft"
                           "${PROJECT_SOURCE_DIR}/src/worker"

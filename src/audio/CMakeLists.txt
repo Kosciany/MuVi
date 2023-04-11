@@ -12,7 +12,8 @@ add_library(audio AudioLoopback.cpp AudioLoopback.h AudioLoopbackWorker.cpp Audi
 target_include_directories(audio PUBLIC
                           "${PROJECT_BINARY_DIR}"
                           "${PROJECT_SOURCE_DIR}"
-                          "${PROJECT_SOURCE_DIR}/lib/audio"
+                          "${PROJECT_SOURCE_DIR}/lib/audio/ffaudio"
+                          "${PROJECT_SOURCE_DIR}/lib/audio/ffbase"
                           "${PROJECT_SOURCE_DIR}/src/worker"
                           ${Boost_INCLUDE_DIRS}
                           )
