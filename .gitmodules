@@ -1,0 +1,6 @@
+[submodule "lib/audio/ffbase"]
+	path = lib/audio/ffbase
+	url = https://github.com/stsaz/ffbase
+[submodule "lib/audio/ffaudio"]
+	path = lib/audio/ffaudio
+	url = https://github.com/stsaz/ffaudio
