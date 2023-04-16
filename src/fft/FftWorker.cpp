@@ -3,6 +3,8 @@
 #include <iostream>
 #include <chrono>
 
+#include "Logger.h"
+
 namespace Muvi {
 
 
@@ -12,10 +14,10 @@ namespace Muvi {
         while(IsRunning()) {
             unsigned int value;
             while(ProducerPop(value)) {
-                std::cout << "[FFT Worker] read " << value << std::endl;
+                MUVI_FFT_TRACE("Read {0}", value);
             }
 
-            std::cout << "[FFT Worker] Going to sleep for 1s\n";
+            MUVI_FFT_INFO("Going to sleep for 1s");
             std::this_thread::sleep_for(1s);
         }
     }
