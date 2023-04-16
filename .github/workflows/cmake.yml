@@ -8,7 +8,9 @@ jobs:
       run:
         shell: pwsh
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3 
+        with:
+          submodules: 'true'
       - uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
