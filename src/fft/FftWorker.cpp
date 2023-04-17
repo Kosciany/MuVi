@@ -15,11 +15,10 @@ namespace Muvi {
         while(IsRunning()) {
             audiobuff_t value;
             while(ProducerPop(value)) {
-                MUVI_FFT_TRACE("Read {0}", value);
+                MUVI_FFT_TRACE("Read {0}", value.channels);
             }
+            MUVI_FFT_INFO("Going to sleep for 50ms");
             std::this_thread::sleep_for(50ms);
-            MUVI_FFT_INFO("Going to sleep for 1s");
-            std::this_thread::sleep_for(1s);
         }
     }
 } // Muvi
