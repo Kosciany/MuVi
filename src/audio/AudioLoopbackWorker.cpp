@@ -18,10 +18,8 @@ namespace Muvi {
             if (!result) {
                 MUVI_AUDIO_TRACE("Pushing buffer");
                 if(!Push(audio_buffer)) {
-                        MUVI_AUDIO_WARN("Queue is full!");
+                    MUVI_AUDIO_WARN("Queue is full!");
                 }
-                MUVI_AUDIO_INFO("Going to sleep for 50ms");
-                std::this_thread::sleep_for(50ms);
             }
         } while(1);
     }

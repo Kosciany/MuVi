@@ -4,11 +4,9 @@
 
 namespace Muvi{
     typedef struct{
-        float first_channel[AUDIO_BUFFER_SIZE];
-        float second_channel[AUDIO_BUFFER_SIZE];
-        unsigned int samples;
+        float first_channel[CHUNK_SIZE];
+        float second_channel[CHUNK_SIZE];
         int channels;
         unsigned int frequency;
-        unsigned int period_ms;
     } audiobuff_t;
 }

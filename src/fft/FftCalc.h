@@ -12,7 +12,7 @@ namespace Muvi {
     class FftCalc {
     public:
         FftCalc();
-        void calc(audiobuff_t *input, fft_buff_t *output);
-        void slowFFT(audiobuff_t *input, fft_buff_t *output);
+        void calcFFT(audiobuff_t *input, fft_buff_t *output);
+        void calcDFT(audiobuff_t *input, fft_buff_t *output);
     };
 } // Muvi
