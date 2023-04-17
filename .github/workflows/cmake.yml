@@ -1,0 +1,22 @@
+name: MSYS2
+on: [push, pull_request]
+
+jobs:
+  msys2-ucrt64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v3 
+        with:
+          submodules: 'true'
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: git mingw-w64-ucrt-x86_64-gcc mingw-w64-x86_64-toolchain msys2-w32api-headers msys2-w32api-runtime mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-boost mingw-w64-x86_64-spdlog
+      - name: CI-Build
+        run: |
+          ${{ runner.temp }}\msys64\mingw64\bin\cmake -G Ninja
+          ${{ runner.temp }}\msys64\mingw64\bin\ninja

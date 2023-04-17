@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <chrono>
 
+#include "Logger.h"
+
 namespace Muvi {
 
 
@@ -17,7 +19,7 @@ namespace Muvi {
         while(IsRunning()) {
             audiobuff_t value;
             while(ProducerPop(value)) {
-                std::cout << "[FFT Worker] read " << value.channels << std::fixed << std::setw(10) << std::setprecision(5) << value.first_channel[0] << std::endl;
+                MUVI_FFT_TRACE("Read {0}", value.channels);
                 if(!i && value.samples) {
                     std::ofstream myfile;
                     fftcalc.slowFFT(&value, &buff);
@@ -35,6 +37,7 @@ namespace Muvi {
                     myfile.close();
                 }
             }
+            MUVI_FFT_INFO("Going to sleep for 50ms");
             std::this_thread::sleep_for(50ms);
         }
     }

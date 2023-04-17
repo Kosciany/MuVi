@@ -4,6 +4,14 @@ project(audiotest)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+Include(FetchContent)
+FetchContent_Declare(
+        spdlog
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG v1.11.0
+)
+FetchContent_MakeAvailable(spdlog)
+
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
@@ -15,15 +23,17 @@ add_subdirectory(lib)
 add_subdirectory(src)
 add_executable(audiotest main.cpp)
 
-target_link_libraries(audiotest PRIVATE ffaudio audio fft ${Boost_LIBRARIES})
+target_link_libraries(audiotest PRIVATE ffaudio audio fft logger ${Boost_LIBRARIES} spdlog::spdlog)
 
 target_include_directories(audiotest PUBLIC
                           "."
                           "${PROJECT_BINARY_DIR}"
-                          "${PROJECT_SOURCE_DIR}/lib/audio"
+                          "${PROJECT_SOURCE_DIR}/lib/audio/ffaudio"
+                          "${PROJECT_SOURCE_DIR}/lib/audio/ffbase"
                           "${PROJECT_SOURCE_DIR}/src/audio"
                           "${PROJECT_SOURCE_DIR}/src/fft"
                           "${PROJECT_SOURCE_DIR}/src/worker"
+                          "${PROJECT_SOURCE_DIR}/src/logger"
                            ${Boost_INCLUDE_DIRS}
                           )
 

@@ -3,15 +3,17 @@
 
 #include <ffaudio/audio.h>
 #include <AudioLoopback.h>
+#include <Logger.h>
 
 
 namespace Muvi {
 
     template <typename T>
-    void fill_buffer(audiobuff_t *output_buffer, int size, T *input_buffer)
+    void fill_buffer(audiobuff_t *output_buffer, size_t size, T *input_buffer)
     {
         output_buffer->samples = size/(sizeof(T) * output_buffer->channels);
         if (output_buffer->samples > (sizeof(output_buffer->first_channel)/output_buffer->first_channel[0])){
+            MUVI_AUDIO_ERROR("Buffer for samples is too small");
             output_buffer->samples = (sizeof(output_buffer->first_channel)/output_buffer->first_channel[0]);
         }
 
@@ -60,7 +62,7 @@ namespace Muvi {
         res = this->audio_interface->open(this->audio_buf , &this->audio_conf, FFAUDIO_LOOPBACK | FFAUDIO_O_NONBLOCK);
 
         if(res == FFAUDIO_ERROR) {
-            std::cout << "Error: " << this->audio_interface->error(this->audio_buf) << std::endl;
+            MUVI_AUDIO_ERROR("Error: {0}", this->audio_interface->error(this->audio_buf));
         }
         else if (res == FFAUDIO_EFORMAT)
         {
