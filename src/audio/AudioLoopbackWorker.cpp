@@ -2,6 +2,7 @@
 #include <chrono>
 #include "AudioLoopbackWorker.h"
 #include "AudioLoopback.h"
+#include "Logger.h"
 
 namespace Muvi {
 
@@ -18,10 +19,12 @@ namespace Muvi {
             if (!result) {
                 //std::cout <<"[AudioLoopback Worker] Pushing " << audio_buffer.buff[0] << std::endl;
                 if(!Push(audio_buffer)) {
-                    std::cout << "[AudioLoopback Worker] Queue is full!\n";
+                    MUVI_AUDIO_TRACE("Pushing {0}", buffer[i]);
+                        MUVI_AUDIO_WARN("Queue is full!");
                 }
                 // std::cout << "[AudioLoopback Worker] Going to sleep for 1s\n";
-                std::this_thread::sleep_for(100ms);
+                MUVI_AUDIO_INFO("Going to sleep for 1s");
+                std::this_thread::sleep_for(1s);
             }
         } while(1);
     }
