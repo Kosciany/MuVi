@@ -1,10 +1,13 @@
 #include <iostream>
 #include <stdlib.h>
 
+#include "Logger.h"
 #include "FftWorker.h"
 #include "AudioLoopbackWorker.h"
 
 int main() {
+    MuVi::Logger::Init();
+
     Muvi::AudioLoopbackWorker audioLoopbackWorker;
     audioLoopbackWorker.Spawn();
 

@@ -4,6 +4,7 @@
 #include <chrono>
 
 #include "AudioLoopback.h"
+#include "Logger.h"
 
 namespace Muvi {
 
@@ -20,14 +21,14 @@ namespace Muvi {
             if (buffer) {
                 for(int i=0; i < size/sizeof(uint32_t); i++)
                 {
-                    std::cout <<"[AudioLoopback Worker] Pushing " << buffer[i] << std::endl;
+                    MUVI_AUDIO_TRACE("Pushing {0}", buffer[i]);
                     if(!Push((unsigned int)buffer[i])) {
-                        std::cout << "[AudioLoopback Worker] Queue is full!\n";
+                        MUVI_AUDIO_WARN("Queue is full!");
                         break;
                     }
                 }
 
-                std::cout << "[AudioLoopback Worker] Going to sleep for 1s\n";
+                MUVI_AUDIO_INFO("Going to sleep for 1s");
                 std::this_thread::sleep_for(1s);
             }
         } while(1);
