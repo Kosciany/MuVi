@@ -2,10 +2,11 @@
 
 #include "MuviConfig.h"
 #include "Worker.h"
+#include "AudioBuff.h"
 
 namespace Muvi {
 
-    class AudioLoopbackWorker : public Worker<unsigned int, MUVI_CFG_WORKER_BUF_SIZE_ELEMS> {
+    class AudioLoopbackWorker : public Worker<audiobuff_t, MUVI_CFG_WORKER_BUF_SIZE_ELEMS> {
     public:
         AudioLoopbackWorker() {}
         ~AudioLoopbackWorker() {}

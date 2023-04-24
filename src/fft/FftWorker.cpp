@@ -1,6 +1,7 @@
 #include "FftWorker.h"
 
 #include <iostream>
+#include <iomanip>
 #include <chrono>
 
 #include "Logger.h"
@@ -12,13 +13,12 @@ namespace Muvi {
         using namespace std::chrono_literals;
 
         while(IsRunning()) {
-            unsigned int value;
+            audiobuff_t value;
             while(ProducerPop(value)) {
-                MUVI_FFT_TRACE("Read {0}", value);
+                MUVI_FFT_TRACE("Read {0}", value.channels);
             }
-
-            MUVI_FFT_INFO("Going to sleep for 1s");
-            std::this_thread::sleep_for(1s);
+            MUVI_FFT_INFO("Going to sleep for 50ms");
+            std::this_thread::sleep_for(50ms);
         }
     }
 } // Muvi
