@@ -23,5 +23,6 @@ jobs:
         author_name: Clang Robot
         author_email: clang@muvi.com
         message: 'Committing clang-format changes'
+        new_branch: clang-robot-fixes
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
