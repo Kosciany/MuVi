@@ -23,7 +23,7 @@ add_subdirectory(lib)
 add_subdirectory(src)
 add_executable(audiotest main.cpp)
 
-target_link_libraries(audiotest PRIVATE ffaudio audio fft logger ${Boost_LIBRARIES} spdlog::spdlog)
+target_link_libraries(audiotest PRIVATE ffaudio audio fft logger renderer ${Boost_LIBRARIES} spdlog::spdlog)
 
 target_include_directories(audiotest PUBLIC
                           "."
@@ -34,6 +34,7 @@ target_include_directories(audiotest PUBLIC
                           "${PROJECT_SOURCE_DIR}/src/fft"
                           "${PROJECT_SOURCE_DIR}/src/worker"
                           "${PROJECT_SOURCE_DIR}/src/logger"
+                          "${PROJECT_SOURCE_DIR}/src/renderer"
                            ${Boost_INCLUDE_DIRS}
                           )
 
