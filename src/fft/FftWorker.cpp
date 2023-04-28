@@ -17,7 +17,6 @@
 
 namespace Muvi {
 
-
     void FftWorker::Run() {
         using namespace std::chrono_literals;
         FftCalc fftcalc = FftCalc();
@@ -27,10 +26,11 @@ namespace Muvi {
 #endif // DEBUG
         while(IsRunning()) {
             audiobuff_t value;
-            while(ProducerPop(value)) {
+            while(Consume(value)) {
                 MUVI_FFT_TRACE("Samples read");
 
                 fftcalc.calcFFT(&value, &buff);
+                Produce(buff);
 #ifdef DEBUG
                 if(!dumped){
                     // Debug purpose only, may be removed forever after verifying
@@ -51,7 +51,7 @@ namespace Muvi {
                 }
 #endif // DEBUG
             }
-            ProducerWait();
+            waitForProduct();
         }
     }
 } // Muvi

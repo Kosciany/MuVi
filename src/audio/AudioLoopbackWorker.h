@@ -6,7 +6,8 @@
 
 namespace Muvi {
 
-    class AudioLoopbackWorker : public Worker<audiobuff_t, MUVI_CFG_WORKER_BUF_SIZE_ELEMS> {
+    class AudioLoopbackWorker : public Worker,
+                                public Producer<audiobuff_t, MUVI_CFG_WORKER_BUF_SIZE_ELEMS> {
     public:
         AudioLoopbackWorker() {}
         ~AudioLoopbackWorker() {}

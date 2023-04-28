@@ -17,7 +17,7 @@ namespace Muvi {
             result = audio.ReadChunk(&audio_buffer);
             if (!result) {
                 MUVI_AUDIO_TRACE("Pushing buffer");
-                if(!Push(audio_buffer)) {
+                if(!Produce(audio_buffer)) {
                     MUVI_AUDIO_WARN("Queue is full!");
                 }
             }

@@ -1,3 +1,4 @@
+#pragma once
 #include "MuviConfig.h"
 #include <complex>
 
