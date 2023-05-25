@@ -12,6 +12,8 @@ class RendererGraph {
     private:
         GLFWwindow* window;
         int width, height;
+        unsigned int VBO, VAO, EBO;
+        unsigned int shaderProgram;
     public:
         RendererGraph();
         ~RendererGraph();

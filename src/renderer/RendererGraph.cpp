@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <float.h>
 
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
@@ -18,254 +19,36 @@
 #include "FFTBuff.h"
 
 namespace Muvi{
-    static void
-    gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
-        GLint teeth, GLfloat tooth_depth)
+
+    void processInput(GLFWwindow *window)
     {
-        GLint i;
-        GLfloat r0, r1, r2;
-        GLfloat angle, da;
-        GLfloat u, v, len;
-
-        r0 = inner_radius;
-        r1 = outer_radius - tooth_depth / 2.f;
-        r2 = outer_radius + tooth_depth / 2.f;
-
-        da = 2.f * (float)M_PI / teeth / 4.f;
-
-        glShadeModel(GL_FLAT);
-
-        glNormal3f(0.f, 0.f, 1.f);
-
-        /* draw front face */
-        glBegin(GL_QUAD_STRIP);
-        for (i = 0; i <= teeth; i++) {
-            angle = i * 2.f * (float)M_PI / teeth;
-            glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), width * 0.5f);
-            glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), width * 0.5f);
-            if (i < teeth) {
-                glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), width * 0.5f);
-                glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), width * 0.5f);
-            }
-        }
-        glEnd();
-
-        /* draw front sides of teeth */
-        glBegin(GL_QUADS);
-        da = 2.f * (float)M_PI / teeth / 4.f;
-        for (i = 0; i < teeth; i++) {
-            angle = i * 2.f * (float)M_PI / teeth;
-
-            glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), width * 0.5f);
-            glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), width * 0.5f);
-            glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), width * 0.5f);
-            glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), width * 0.5f);
-        }
-        glEnd();
-
-        glNormal3f(0.0, 0.0, -1.0);
-
-        /* draw back face */
-        glBegin(GL_QUAD_STRIP);
-        for (i = 0; i <= teeth; i++) {
-            angle = i * 2.f * (float)M_PI / teeth;
-            glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -width * 0.5f);
-            glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -width * 0.5f);
-            if (i < teeth) {
-                glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -width * 0.5f);
-                glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -width * 0.5f);
-            }
-        }
-        glEnd();
-
-        /* draw back sides of teeth */
-        glBegin(GL_QUADS);
-        da = 2.f * (float)M_PI / teeth / 4.f;
-        for (i = 0; i < teeth; i++) {
-            angle = i * 2.f * (float)M_PI / teeth;
-
-            glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -width * 0.5f);
-            glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), -width * 0.5f);
-            glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), -width * 0.5f);
-            glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -width * 0.5f);
-        }
-        glEnd();
-
-        /* draw outward faces of teeth */
-        glBegin(GL_QUAD_STRIP);
-        for (i = 0; i < teeth; i++) {
-            angle = i * 2.f * (float)M_PI / teeth;
-
-            glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), width * 0.5f);
-            glVertex3f(r1 * (float)cos(angle), r1 * (float)sin(angle), -width * 0.5f);
-            u = r2 * (float)cos(angle + da) - r1 * (float)cos(angle);
-            v = r2 * (float)sin(angle + da) - r1 * (float)sin(angle);
-            len = (float)sqrt(u * u + v * v);
-            u /= len;
-            v /= len;
-            glNormal3f(v, -u, 0.0);
-            glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), width * 0.5f);
-            glVertex3f(r2 * (float)cos(angle + da), r2 * (float)sin(angle + da), -width * 0.5f);
-            glNormal3f((float)cos(angle), (float)sin(angle), 0.f);
-            glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), width * 0.5f);
-            glVertex3f(r2 * (float)cos(angle + 2 * da), r2 * (float)sin(angle + 2 * da), -width * 0.5f);
-            u = r1 * (float)cos(angle + 3 * da) - r2 * (float)cos(angle + 2 * da);
-            v = r1 * (float)sin(angle + 3 * da) - r2 * (float)sin(angle + 2 * da);
-            glNormal3f(v, -u, 0.f);
-            glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), width * 0.5f);
-            glVertex3f(r1 * (float)cos(angle + 3 * da), r1 * (float)sin(angle + 3 * da), -width * 0.5f);
-            glNormal3f((float)cos(angle), (float)sin(angle), 0.f);
-        }
-
-        glVertex3f(r1 * (float)cos(0), r1 * (float)sin(0), width * 0.5f);
-        glVertex3f(r1 * (float)cos(0), r1 * (float)sin(0), -width * 0.5f);
-
-        glEnd();
-
-        glShadeModel(GL_SMOOTH);
-
-        /* draw inside radius cylinder */
-        glBegin(GL_QUAD_STRIP);
-        for (i = 0; i <= teeth; i++) {
-            angle = i * 2.f * (float)M_PI / teeth;
-            glNormal3f(-(float)cos(angle), -(float)sin(angle), 0.f);
-            glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), -width * 0.5f);
-            glVertex3f(r0 * (float)cos(angle), r0 * (float)sin(angle), width * 0.5f);
-        }
-        glEnd();
-
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
     }
 
-    static GLfloat view_rotx = 20.f, view_roty = 30.f, view_rotz = 0.f;
-    static GLint gear1, gear2, gear3;
-    static GLfloat angle = 0.f;
-
-    /* OpenGL draw function & timing */
-    static void draw(void)
+    // glfw: whenever the window size changed (by OS or user resize) this callback function executes
+    // ---------------------------------------------------------------------------------------------
+    void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {
-        glClearColor(0.0, 0.0, 0.0, 0.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glPushMatrix();
-        glRotatef(view_rotx, 1.0, 0.0, 0.0);
-        glRotatef(view_roty, 0.0, 1.0, 0.0);
-        glRotatef(view_rotz, 0.0, 0.0, 1.0);
-
-        glPushMatrix();
-        glTranslatef(-3.0, -2.0, 0.0);
-        glRotatef(angle, 0.0, 0.0, 1.0);
-        glCallList(gear1);
-        glPopMatrix();
-
-        glPushMatrix();
-        glTranslatef(3.1f, -2.f, 0.f);
-        glRotatef(-2.f * angle - 9.f, 0.f, 0.f, 1.f);
-        glCallList(gear2);
-        glPopMatrix();
-
-        glPushMatrix();
-        glTranslatef(-3.1f, 4.2f, 0.f);
-        glRotatef(-2.f * angle - 25.f, 0.f, 0.f, 1.f);
-        glCallList(gear3);
-        glPopMatrix();
-
-        glPopMatrix();
+        // make sure the viewport matches the new window dimensions; note that width and 
+        // height will be significantly larger than specified on retina displays.
+        glViewport(0, 0, width, height);
     }
+    const unsigned int SCR_WIDTH = 800;
+    const unsigned int SCR_HEIGHT = 600;
 
-
-    /* update animation parameters */
-    static void animate(void)
-    {
-        angle = 100.f * (float)glfwGetTime();
-    }
-
-    /* change view angle, exit upon ESC */
-    void key(GLFWwindow* window, int k, int s, int action, int mods)
-    {
-        if (action != GLFW_PRESS) return;
-
-        switch (k) {
-        case GLFW_KEY_Z:
-            if (mods & GLFW_MOD_SHIFT)
-                view_rotz -= 5.0;
-            else
-                view_rotz += 5.0;
-            break;
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, GLFW_TRUE);
-            break;
-        case GLFW_KEY_UP:
-            view_rotx += 5.0;
-            break;
-        case GLFW_KEY_DOWN:
-            view_rotx -= 5.0;
-            break;
-        case GLFW_KEY_LEFT:
-            view_roty += 5.0;
-            break;
-        case GLFW_KEY_RIGHT:
-            view_roty -= 5.0;
-            break;
-        default:
-            return;
-        }
-    }
-
-    /* new window size */
-    void reshape(GLFWwindow* window, int width, int height)
-    {
-        GLfloat h = (GLfloat)height / (GLfloat)width;
-        GLfloat xmax, znear, zfar;
-
-        znear = 5.0f;
-        zfar = 30.0f;
-        xmax = znear * 0.5f;
-
-        glViewport(0, 0, (GLint)width, (GLint)height);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glFrustum(-xmax, xmax, -xmax * h, xmax * h, znear, zfar);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glTranslatef(0.0, 0.0, -20.0);
-    }
-
-
-    /* program & OpenGL initialization */
-    static void init(void)
-    {
-        static GLfloat pos[4] = { 5.f, 5.f, 10.f, 0.f };
-        static GLfloat red[4] = { 0.8f, 0.1f, 0.f, 1.f };
-        static GLfloat green[4] = { 0.f, 0.8f, 0.2f, 1.f };
-        static GLfloat blue[4] = { 0.2f, 0.2f, 1.f, 1.f };
-
-        glLightfv(GL_LIGHT0, GL_POSITION, pos);
-        glEnable(GL_CULL_FACE);
-        glEnable(GL_LIGHTING);
-        glEnable(GL_LIGHT0);
-        glEnable(GL_DEPTH_TEST);
-
-        /* make the gears */
-        gear1 = glGenLists(1);
-        glNewList(gear1, GL_COMPILE);
-        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, red);
-        gear(1.f, 4.f, 1.f, 20, 0.7f);
-        glEndList();
-
-        gear2 = glGenLists(1);
-        glNewList(gear2, GL_COMPILE);
-        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, green);
-        gear(0.5f, 2.f, 2.f, 10, 0.7f);
-        glEndList();
-
-        gear3 = glGenLists(1);
-        glNewList(gear3, GL_COMPILE);
-        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, blue);
-        gear(1.3f, 2.f, 0.5f, 10, 0.7f);
-        glEndList();
-
-        glEnable(GL_NORMALIZE);
-    }
+    const char *vertexShaderSource = "#version 330 core\n"
+        "layout (location = 0) in vec3 aPos;\n"
+        "void main()\n"
+        "{\n"
+        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+        "}\0";
+    const char *fragmentShaderSource = "#version 330 core\n"
+        "out vec4 FragColor;\n"
+        "void main()\n"
+        "{\n"
+        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+        "}\n\0";
 
     RendererGraph::RendererGraph()
     {
@@ -276,44 +59,130 @@ namespace Muvi{
             MUVI_RENDERER_INFO("GLFW init success");
         }
 
-        glfwWindowHint(GLFW_DEPTH_BITS, 16);
-        glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        window = glfwCreateWindow(300, 300, "Gears", NULL, NULL);
+        window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
         if (!window) {
             MUVI_RENDERER_CRITICAL("Failed to open GLFW window");
             glfwTerminate();
             exit(EXIT_FAILURE);
         }
-            // Set callback functions
-        glfwSetFramebufferSizeCallback(window, reshape);
-        glfwSetKeyCallback(window, key);
 
         glfwMakeContextCurrent(window);
+        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         gladLoadGL(glfwGetProcAddress);
-        glfwSwapInterval(1);
 
-        glfwGetFramebufferSize(window, &width, &height);
-        reshape(window, width, height);
+        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+        glCompileShader(vertexShader);
+        // check for shader compile errors
+        int success;
+        char infoLog[512];
+        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+            MUVI_RENDERER_ERROR("ERROR::SHADER::VERTEX::COMPILATION_FAILED\n", infoLog);
+        }
+        // fragment shader
+        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+        glCompileShader(fragmentShader);
+        // check for shader compile errors
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+            MUVI_RENDERER_ERROR("ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n", infoLog);
+        }
+        // link shaders
+        shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+        // check for linking errors
+        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+        if (!success) {
+            glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+            MUVI_RENDERER_ERROR("ERROR::SHADER::PROGRAM::LINKING_FAILED\n", infoLog);
+        }
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+        // set up vertex data (and buffer(s)) and configure vertex attributes
+        // ------------------------------------------------------------------
+        float vertices[] = {
+            0.5f,  0.5f, 0.0f,  // top right
+            0.5f, -0.5f, 0.0f,  // bottom right
+            -0.5f, -0.5f, 0.0f,  // bottom left
+            -0.5f,  0.5f, 0.0f   // top left 
+        };
+        unsigned int indices[] = {  // note that we start from 0!
+            0, 1, 3,  // first Triangle
+            1, 2, 3   // second Triangle
+        };
+        
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        glGenBuffers(1, &EBO);
+        // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+        glBindVertexArray(VAO);
 
-        // Parse command-line options
-        init();
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+        glBindBuffer(GL_ARRAY_BUFFER, 0); 
+
+        // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+        // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+        glBindVertexArray(0); 
     }
 
     void RendererGraph::Render(fft_buff_t& buff) {
-        // Draw gears
-        draw();
+        (void) buff;
 
-        // Update animation
-        animate();
+        if (!glfwWindowShouldClose(window)) {
+            // input
+            // -----
+            processInput(window);
 
-        // Swap buffers
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+            // render
+            // ------
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            // draw our first triangle
+            glUseProgram(shaderProgram);
+            glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+            //glDrawArrays(GL_TRIANGLES, 0, 6);
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            // glBindVertexArray(0); // no need to unbind it every time 
+    
+            // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+            // -------------------------------------------------------------------------------
+            glfwSwapBuffers(window);
+            glfwPollEvents();
+        }
     }
 
     RendererGraph::~RendererGraph()
     {
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &EBO);
+        glDeleteProgram(shaderProgram);
+
         glfwTerminate();
         exit(EXIT_SUCCESS);
     }

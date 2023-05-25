@@ -18,8 +18,8 @@ int main() {
     Muvi::RendererWorker rendererWorker(fftWorker);
     rendererWorker.Spawn();
 
-    audioLoopbackWorker.Join();
-    fftWorker.Join();
+    // audioLoopbackWorker.Join();
+    // fftWorker.Join();
     rendererWorker.Join();
 
     return 0;
