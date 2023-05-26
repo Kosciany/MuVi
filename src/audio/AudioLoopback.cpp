@@ -132,6 +132,10 @@ namespace Muvi {
     }
 
     int AudioLoopback::GetCachedSamples(audiobuff_t* output){
+        if(this->samples_buff_chnl_1.size() < CHUNK_SIZE){
+            return -1;
+        }
+
         for(int i=0; i < CHUNK_SIZE; i++) {
             output->first_channel[i] = this->samples_buff_chnl_1.front();
             this->samples_buff_chnl_1.pop_front();

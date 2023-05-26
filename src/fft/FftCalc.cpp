@@ -61,9 +61,10 @@ void fft(float *x_in,
         }
 
         fft(input->first_channel, output_complex, N);
-
+        output->max_amplitude = 0;
         for(int i = 0; i < N; i++) {
             output->amplitude_1[i] = output_complex[i];
+            output->max_amplitude = std::max(output->max_amplitude, std::abs(output_complex[i]));
         }
 
         return;

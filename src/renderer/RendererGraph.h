@@ -7,13 +7,15 @@
 
 #include "FFTBuff.h"
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
+
 namespace Muvi {
 class RendererGraph {
     private:
-        GLFWwindow* window;
-        int width, height;
-        unsigned int VBO, VAO, EBO;
-        unsigned int shaderProgram;
+        cv::Mat *frame;
+        cv::Mat colour_frame;
     public:
         RendererGraph();
         ~RendererGraph();
