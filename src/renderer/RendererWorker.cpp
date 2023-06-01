@@ -15,12 +15,12 @@ namespace Muvi {
         fft_buff_t buff;
 
         while(IsRunning()) {
-            memset(&buff, 0x00,sizeof(fft_buff_t));
+            memset(&buff, 0x00, sizeof(fft_buff_t));
             while(Consume(buff)) {
                 MUVI_RENDERER_TRACE("RECEIVED BUFFER");
                 graph.Render(buff);
             }
-            waitForProduct();
+            graph.HandleUI();
         }
     }
 } // Muvi

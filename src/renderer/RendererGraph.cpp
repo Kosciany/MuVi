@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <float.h>
+#include <climits>
 
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
@@ -20,42 +21,56 @@
 #include "RendererGraph.h"
 #include "FFTBuff.h"
 
+
 namespace Muvi{
 
     RendererGraph::RendererGraph()
     {
-        frame = new cv::Mat(255, CHUNK_SIZE/4, CV_8UC1);
-        cv::namedWindow("MuVi", cv::WINDOW_AUTOSIZE);
+        cv::namedWindow(WINDOW_NAME, cv::WINDOW_AUTOSIZE);
+        raw_frame = cv::Mat(MAT_HEIGHT, CHUNK_SIZE, CV_8UC1);
+        cv::cvtColor(raw_frame, coloured_frame, cv::COLOR_GRAY2BGR);
     }
 
     void RendererGraph::Render(fft_buff_t& buff) {
+        for (int i = 0; i < MAT_HEIGHT; i++) {
+            for (int j = 0; j < CHUNK_SIZE; j++) {
+                //raw_frame.at<uchar>(MAT_HEIGHT-(i+1), j) = i > ((std::abs(buff.amplitude_1[j])*MAT_HEIGHT)/buff.max_amplitude) ? 0 : i;
+                raw_frame.at<uchar>(MAT_HEIGHT-(i+1), j) = i > (log10(std::abs(buff.amplitude_1[j]))*100) ? 0 : i;
+            }
+        }
+        cv::equalizeHist(raw_frame, raw_frame);
 
-        cv::Mat blurred_frame;
-        cv::GaussianBlur(*frame, blurred_frame,cv::Size(5, 5), 0);
-        cv::cvtColor(blurred_frame, colour_frame, cv::COLOR_GRAY2BGR);
-        cv::applyColorMap(colour_frame, colour_frame, cv::COLORMAP_TURBO);
-        
-        for (int i = 0; i < 255; i++) {
-            for (int j = 0; j < CHUNK_SIZE/4; j++) {
-                if(frame->at<uchar>(i, j) == 0){
-                    colour_frame.at<cv::Vec3b>(i, j) = {0, 0, 0};
+        cv::cvtColor(raw_frame, coloured_frame, cv::COLOR_GRAY2BGR);
+        cv::applyColorMap(coloured_frame, coloured_frame, cv::COLORMAP_TURBO);
+
+        for (int i = 0; i < MAT_HEIGHT; i++) {
+            for (int j = 0; j < CHUNK_SIZE; j++) {
+                if(raw_frame.at<uchar>(i, j) == 0){
+                    coloured_frame.at<cv::Vec3b>(i, j) = {0, 0, 0};
                 };
             }
         }
 
-        cv::resize(colour_frame, colour_frame, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
-        cv::imshow("MuVi", colour_frame);
+
+        cv::resize(coloured_frame, coloured_frame, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
+
+        PlotGraph();
+    }
+
+    void RendererGraph::PlotGraph(void)
+    {
+        cv::imshow(WINDOW_NAME, coloured_frame);
         cv::waitKey(1);
-        for (int i = 0; i < 255; i++) {
-            for (int j = 0; j < CHUNK_SIZE/4; j++) {
-                frame->at<uchar>(254-i, j) = i > ((std::abs(buff.amplitude_1[j])*255)/buff.max_amplitude) ? 0 : i;
-            }
-        }
+    }
+
+    void RendererGraph::HandleUI(void)
+    {
+        PlotGraph();
     }
 
     RendererGraph::~RendererGraph()
     {
-        
+
     }
 
 };  // namespace Muvi
