@@ -28,16 +28,24 @@ namespace Muvi{
     {
         cv::namedWindow(WINDOW_NAME, cv::WINDOW_AUTOSIZE);
         raw_frame = cv::Mat(MAT_HEIGHT, CHUNK_SIZE, CV_8UC1);
+        for (int i = 0; i < MAT_HEIGHT; i++) {
+            for (int j = 0; j < CHUNK_SIZE; j++) {
+                raw_frame.at<uchar>(MAT_HEIGHT-(i+1), j) = 0;
+            }
+        }
+        memset(&amplitude, 0x00, sizeof(amplitude));
         cv::cvtColor(raw_frame, coloured_frame, cv::COLOR_GRAY2BGR);
     }
 
     void RendererGraph::Render(fft_buff_t& buff) {
-        for (int i = 0; i < MAT_HEIGHT; i++) {
-            for (int j = 0; j < CHUNK_SIZE; j++) {
-                //raw_frame.at<uchar>(MAT_HEIGHT-(i+1), j) = i > ((std::abs(buff.amplitude_1[j])*MAT_HEIGHT)/buff.max_amplitude) ? 0 : i;
-                raw_frame.at<uchar>(MAT_HEIGHT-(i+1), j) = i > (log10(std::abs(buff.amplitude_1[j]))*100) ? 0 : i;
+        for (int j = 0; j < CHUNK_SIZE; j++) {
+            amplitude[j] = (((AVERAGE_WINDOW_SIZE-1))*amplitude[j]/AVERAGE_WINDOW_SIZE) + std::abs(buff.amplitude_1[j])/AVERAGE_WINDOW_SIZE;
+            for (int i = 0; i < MAT_HEIGHT; i++) {
+                raw_frame.at<uchar>(i, j) = \
+                     (i > (log2(amplitude[j]) * 33) ? 0 : i);
             }
         }
+
         cv::equalizeHist(raw_frame, raw_frame);
 
         cv::cvtColor(raw_frame, coloured_frame, cv::COLOR_GRAY2BGR);
@@ -53,7 +61,7 @@ namespace Muvi{
 
 
         cv::resize(coloured_frame, coloured_frame, cv::Size(1280, 720), 0, 0, cv::INTER_CUBIC);
-
+        cv::flip(coloured_frame, coloured_frame, 0);
         PlotGraph();
     }
 

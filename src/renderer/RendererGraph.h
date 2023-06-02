@@ -13,10 +13,12 @@
 
 #define WINDOW_NAME "MuVi"
 #define MAT_HEIGHT UCHAR_MAX
+#define AVERAGE_WINDOW_SIZE 5
 
 namespace Muvi {
 class RendererGraph {
     private:
+        double amplitude[CHUNK_SIZE];
         cv::Mat raw_frame;
         cv::Mat coloured_frame;
         void PlotGraph(void);
