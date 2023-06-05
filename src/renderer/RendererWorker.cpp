@@ -1,26 +1,26 @@
-#include <iostream>
+#include "RendererWorker.h"
+
+#include <chrono>
 #include <fstream>
 #include <iomanip>
-#include <chrono>
+#include <iostream>
 
 #include "Logger.h"
-#include "RendererWorker.h"
 #include "RendererGraph.h"
 
 namespace Muvi {
-
 
     void RendererWorker::Run() {
         RendererGraph graph;
         fft_buff_t buff;
 
-        while(IsRunning()) {
+        while (IsRunning()) {
             memset(&buff, 0x00, sizeof(fft_buff_t));
-            while(Consume(buff)) {
+            while (Consume(buff)) {
                 MUVI_RENDERER_TRACE("RECEIVED BUFFER");
                 graph.Render(buff);
             }
             graph.HandleUI();
         }
     }
-} // Muvi
+}  // namespace Muvi

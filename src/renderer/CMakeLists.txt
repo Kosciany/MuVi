@@ -13,6 +13,4 @@ target_include_directories(renderer PUBLIC
                            ${Boost_INCLUDE_DIRS}
                            )
 
-SET(GCC_COVERAGE_COMPILE_FLAGS "-lopengl32 -lglfw3 -lgdi32")
-
-target_link_libraries(renderer PRIVATE spdlog::spdlog glad glfw3 ${OpenCV_LIBS})
+target_link_libraries(renderer PRIVATE spdlog::spdlog ${OpenCV_LIBS})

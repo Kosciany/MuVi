@@ -1,9 +1,6 @@
-#include <iostream>
-#include <stdlib.h>
-
-#include "Logger.h"
-#include "FftWorker.h"
 #include "AudioLoopbackWorker.h"
+#include "FftWorker.h"
+#include "Logger.h"
 #include "RendererWorker.h"
 
 int main() {

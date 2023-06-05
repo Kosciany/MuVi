@@ -1,4 +1,5 @@
 #include "Logger.h"
+
 #include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace MuVi {
@@ -18,4 +19,4 @@ namespace MuVi {
         s_RendererWorkerLogger = spdlog::stdout_color_mt("RendererWorker");
         s_RendererWorkerLogger->set_level(spdlog::level::trace);
     }
-}
+}  // namespace MuVi
