@@ -1,7 +1,6 @@
 #include <FftBuff.h>
 #include <FftCalc.h>
 
-#include <boost/python.hpp>
 #include <cmath>
 #include <complex>
 #include <iostream>
@@ -49,21 +48,14 @@ namespace Muvi {
     }
 
     void FftCalc::calcFFT(audiobuff_t *input, fft_buff_t *output) {
-        std::complex<double> *output_complex;
+        std::complex<double> output_complex[CHUNK_SIZE] = {0};
         int N = CHUNK_SIZE;
 
-        output_complex = new std::complex<double>[N]();
-        if (output_complex == nullptr) {
+        if (!input || !output) {
             return;
         }
 
-        fft(input->first_channel, output_complex, N);
-        output->max_amplitude = 0;
-        for (int i = 0; i < N; i++) {
-            output->amplitude_1[i] = output_complex[i];
-            output->max_amplitude =
-                std::max(output->max_amplitude, std::abs(output_complex[i]));
-        }
+        fft(input->first_channel, output->amplitude_1, N);
 
         return;
     }
