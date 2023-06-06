@@ -9,6 +9,7 @@ target_include_directories(renderer PUBLIC
                            "${PROJECT_SOURCE_DIR}/src/fft"
                            "${PROJECT_SOURCE_DIR}/src/worker"
                            "${PROJECT_SOURCE_DIR}/src/logger"
+                           ${Boost_INCLUDE_DIRS}
                            ${OpenCV_INCLUDE_DIRS}
                            )
 
