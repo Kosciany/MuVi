@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/audiotest.exe",
-            "args": ["--debug"],
+            "args": ["--debug", "--color", "13", "--width", "300", "--height", "200"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
