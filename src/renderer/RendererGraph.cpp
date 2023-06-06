@@ -14,7 +14,8 @@
 
 namespace Muvi {
 
-    RendererGraph::RendererGraph() {
+    RendererGraph::RendererGraph(renderer_config_t config) {
+        m_config = config;
         cv::namedWindow(WINDOW_NAME, cv::WINDOW_AUTOSIZE);
         raw_frame = cv::Mat(MAT_HEIGHT, CHUNK_SIZE, CV_8UC1);
         for (int i = 0; i < MAT_HEIGHT; i++) {
@@ -40,7 +41,7 @@ namespace Muvi {
         cv::equalizeHist(raw_frame, raw_frame);
 
         cv::cvtColor(raw_frame, coloured_frame, cv::COLOR_GRAY2BGR);
-        cv::applyColorMap(coloured_frame, coloured_frame, cv::COLORMAP_TURBO);
+        cv::applyColorMap(coloured_frame, coloured_frame, m_config.colormap);
 
         for (int i = 0; i < MAT_HEIGHT; i++) {
             for (int j = 0; j < CHUNK_SIZE; j++) {
@@ -50,7 +51,8 @@ namespace Muvi {
             }
         }
 
-        cv::resize(coloured_frame, coloured_frame, cv::Size(1280, 720), 0, 0,
+        cv::resize(coloured_frame, coloured_frame,
+                   cv::Size(m_config.width, m_config.height), 0, 0,
                    cv::INTER_CUBIC);
         cv::flip(coloured_frame, coloured_frame, 0);
         PlotGraph();

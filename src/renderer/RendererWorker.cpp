@@ -11,7 +11,7 @@
 namespace Muvi {
 
     void RendererWorker::Run() {
-        RendererGraph graph;
+        RendererGraph graph(m_config);
         fft_buff_t buff;
 
         while (IsRunning()) {

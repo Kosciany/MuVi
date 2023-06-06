@@ -7,7 +7,7 @@
 namespace MuVi {
     class Logger {
        public:
-        static void Init();
+        static void Init(bool trace);
 
         inline static std::shared_ptr<spdlog::logger>& GetAudioWorkerLogger() {
             return s_AudioWorkerLogger;
@@ -19,11 +19,15 @@ namespace MuVi {
         GetRendererWorkerLogger() {
             return s_RendererWorkerLogger;
         }
+        inline static std::shared_ptr<spdlog::logger>& GetMuviLogger() {
+            return s_MuviLogger;
+        }
 
        private:
         static std::shared_ptr<spdlog::logger> s_AudioWorkerLogger;
         static std::shared_ptr<spdlog::logger> s_FftWorkerLogger;
         static std::shared_ptr<spdlog::logger> s_RendererWorkerLogger;
+        static std::shared_ptr<spdlog::logger> s_MuviLogger;
     };
 }  // namespace MuVi
 
@@ -59,3 +63,10 @@ namespace MuVi {
     ::MuVi::Logger::GetRendererWorkerLogger()->error(__VA_ARGS__)
 #define MUVI_RENDERER_CRITICAL(...) \
     ::MuVi::Logger::GetRendererWorkerLogger()->critical(__VA_ARGS__)
+
+#define MUVI_TRACE(...) ::MuVi::Logger::GetMuviLogger()->trace(__VA_ARGS__)
+#define MUVI_INFO(...) ::MuVi::Logger::GetMuviLogger()->info(__VA_ARGS__)
+#define MUVI_WARN(...) ::MuVi::Logger::GetMuviLogger()->warn(__VA_ARGS__)
+#define MUVI_ERROR(...) ::MuVi::Logger::GetMuviLogger()->error(__VA_ARGS__)
+#define MUVI_CRITICAL(...) \
+    ::MuVi::Logger::GetMuviLogger()->critical(__VA_ARGS__)

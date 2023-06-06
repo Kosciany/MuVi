@@ -15,7 +15,9 @@ FetchContent_MakeAvailable(spdlog)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.81.0 COMPONENTS system thread)
+
+find_package( OpenCV REQUIRED )
+find_package(Boost 1.81.0 COMPONENTS system thread program_options)
 
 add_definitions(-DFFAUDIO_INTERFACE_DEFAULT_PTR=&ffwasapi)
 
@@ -23,7 +25,7 @@ add_subdirectory(lib)
 add_subdirectory(src)
 add_executable(audiotest main.cpp)
 
-target_link_libraries(audiotest PRIVATE ffaudio audio fft logger renderer ${Boost_LIBRARIES} spdlog::spdlog)
+target_link_libraries(audiotest PRIVATE ffaudio audio fft logger renderer ${Boost_LIBRARIES} spdlog::spdlog ${OpenCV_LIBS})
 
 target_include_directories(audiotest PUBLIC
                           "."
@@ -36,6 +38,7 @@ target_include_directories(audiotest PUBLIC
                           "${PROJECT_SOURCE_DIR}/src/logger"
                           "${PROJECT_SOURCE_DIR}/src/renderer"
                            ${Boost_INCLUDE_DIRS}
+                           ${OpenCV_INCLUDE_DIRS}
                           )
 
 message("inc_dirs=${Boost_INCLUDE_DIRS}")
