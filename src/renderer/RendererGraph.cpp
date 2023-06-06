@@ -12,6 +12,9 @@
 #include "FFTBuff.h"
 #include "Logger.h"
 
+
+#define MAGIC_COEFFICIENT 33
+
 namespace Muvi {
 
     RendererGraph::RendererGraph(renderer_config_t config) {
@@ -25,6 +28,9 @@ namespace Muvi {
         }
         memset(&amplitude, 0x00, sizeof(amplitude));
         cv::cvtColor(raw_frame, coloured_frame, cv::COLOR_GRAY2BGR);
+        cv::resize(coloured_frame, coloured_frame,
+                   cv::Size(m_config.width, m_config.height), 0, 0,
+                   cv::INTER_CUBIC);
     }
 
     void RendererGraph::Render(fft_buff_t& buff) {
@@ -34,7 +40,7 @@ namespace Muvi {
                            std::abs(buff.amplitude_1[j]) / AVERAGE_WINDOW_SIZE;
             for (int i = 0; i < MAT_HEIGHT; i++) {
                 raw_frame.at<uchar>(i, j) =
-                    (i > (log2(amplitude[j]) * 33) ? 0 : i);
+                    (i > (log2(amplitude[j]) * MAGIC_COEFFICIENT) ? 0 : i);
             }
         }
 
