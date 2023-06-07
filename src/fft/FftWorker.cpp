@@ -1,24 +1,28 @@
 #include "FftWorker.h"
 
-#include <iostream>
-#include <iomanip>
 #include <chrono>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 
+#include "FftBuff.h"
+#include "FftCalc.h"
 #include "Logger.h"
 
 namespace Muvi {
 
-
     void FftWorker::Run() {
         using namespace std::chrono_literals;
-
-        while(IsRunning()) {
+        FftCalc fftcalc = FftCalc();
+        fft_buff_t buff;
+        while (IsRunning()) {
             audiobuff_t value;
-            while(ProducerPop(value)) {
-                MUVI_FFT_TRACE("Read {0}", value.channels);
+            while (Consume(value)) {
+                MUVI_FFT_TRACE("Samples read");
+                fftcalc.calcFFT(&value, &buff);
+                Produce(buff);
             }
-            MUVI_FFT_INFO("Going to sleep for 50ms");
-            std::this_thread::sleep_for(50ms);
+            waitForProduct();
         }
     }
-} // Muvi
+}  // namespace Muvi

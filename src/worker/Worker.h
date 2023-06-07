@@ -1,13 +1,12 @@
 #pragma once
-#include <thread>
 #include <boost/lockfree/spsc_queue.hpp>
+#include <semaphore>
+#include <thread>
 
 namespace Muvi {
 
-    template<typename T, int BUF_ELEMS>
     class Worker {
-    public:
-        Worker(Worker& producer) : m_IsRunning{true}, m_Producer{&producer} {}
+       public:
         Worker() : m_IsRunning{true} {}
         ~Worker() {}
 
@@ -15,23 +14,48 @@ namespace Muvi {
         inline void SetRunningState(bool state) { m_IsRunning = state; }
 
         virtual void Run() = 0;
-        void Spawn() { m_Thread = std::thread([this] { Run(); }); }
+        void Spawn() {
+            m_Thread = std::thread([this] { Run(); });
+        }
         void Join() { m_Thread.join(); }
+
+       private:
+        bool m_IsRunning;
+        std::thread m_Thread;
+    };
+
+    template <typename P, int BUF_ELEMS>
+    class Producer {
+       private:
+       public:
+        std::binary_semaphore m_Semaphore;
+        boost::lockfree::spsc_queue<P, boost::lockfree::capacity<BUF_ELEMS>>
+            m_Queue;
+        Producer() : m_Semaphore{0} {}
+        ~Producer() {}
+
+       protected:
+        /* Returns true if operation was successful */
+        bool Produce(P value) {
+            m_Semaphore.release();
+            return m_Queue.push(value);
+        }
+    };
+
+    template <typename C, int BUF_ELEMS>
+    class Consumer {
+       private:
+        std::thread m_Thread;
+        Producer<C, BUF_ELEMS> *m_Producer = nullptr;
+
+       public:
+        Consumer(Producer<C, BUF_ELEMS> &producer) : m_Producer{&producer} {}
+        ~Consumer() {}
 
         /* Returns true if operation was successful,
          * false if ringbuffer was empty */
-        bool ProducerPop(T& value) { return m_Producer->m_Queue.pop(value); }
-
-
-    protected:
-        /* Returns true if operation was successful */
-        bool Push(T value) { return m_Queue.push(value); }
-
-    private:
-        bool m_IsRunning;
-        std::thread m_Thread;
-        boost::lockfree::spsc_queue<T, boost::lockfree::capacity<BUF_ELEMS>> m_Queue;
-        Worker* m_Producer = nullptr;
+        bool Consume(C &value) { return m_Producer->m_Queue.pop(value); }
+        void waitForProduct() { m_Producer->m_Semaphore.acquire(); }
     };
 
-} // Muvi
+}  // namespace Muvi

@@ -1,0 +1,11 @@
+---
+BasedOnStyle: Google
+AlignEscapedNewlines: DontAlign
+Cpp11BracedListStyle: 'true'
+IndentWidth: '4'
+Language: Cpp
+NamespaceIndentation: All
+TabWidth: '4'
+UseTab: Never
+
+...

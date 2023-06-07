@@ -1049,3 +1049,5 @@ dkms.conf
 
 # Clion config
 .idea/
+
+*.dat

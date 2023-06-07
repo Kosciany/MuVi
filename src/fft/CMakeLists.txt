@@ -1,6 +1,6 @@
 include_directories(".")
 
-add_library(fft FftWorker.cpp FftWorker.h)
+add_library(fft FftWorker.cpp FftWorker.h FftCalc.cpp FftCalc.h FftBuff.h)
 target_include_directories(fft PUBLIC
                            "${PROJECT_SOURCE_DIR}"
                            "${PROJECT_SOURCE_DIR}/src/audio"
