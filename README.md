@@ -40,7 +40,7 @@ git submodule update
     audiotest.exe
     ```
 
-### Results
+## Results
 
 With following command:
 
